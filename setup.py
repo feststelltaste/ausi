@@ -17,7 +17,8 @@ setuptools.setup(
           'pandas',
           'matplotlib',
           'pygal'
-      ],
+    ],
+    include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: BSD 3-Clause License",

@@ -4,6 +4,7 @@ import os
 import numpy as np
 from matplotlib import cm
 from matplotlib.colors import rgb2hex
+import pkg_resources
 
 
 def create_json_for_semantic_substract(df, key_to_groupby, json_output_file):
@@ -27,7 +28,7 @@ def create_json_for_zoomable_circle_packing(
         hierarchy_column_name_separator,
         size_column_name,
         value_column_name,
-        output_file_name,
+        output_file_name_prefix,
         color_column_name='color'):
     # create unique colors per values in column
     colored_column = plot_data[[column_to_color_name]].drop_duplicates()
@@ -81,7 +82,19 @@ def create_json_for_zoomable_circle_packing(
             'size': series[size_column_name],
             'color': series[color_column_name]})
 
-    with open(output_file_name, mode='w', encoding='utf-8') as json_file:
+    json_file_name = output_file_name_prefix + ".json"
+    with open(json_file_name, mode='w', encoding='utf-8') as json_file:
         json_file.write(json.dumps(json_data, indent=3))
 
-    print("JSON file produced in '{}'".format(os.path.abspath(output_file_name)))
+    print("JSON file produced in '{}'".format(os.path.abspath(json_file_name)))
+
+    resource_package = __name__
+    resource_path = '/'.join(('d3_templates', 'zoomable_circle_package.html'))  # Do not use os.path.join()
+    template = pkg_resources.resource_string(resource_package, resource_path)
+    html_file = output_file_name_prefix + ".html"
+    with open(html_file, mode='w', encoding='utf-8') as d3_file:
+        html_as_string = template.decode("utf-8")
+        html_as_string = html_as_string.replace("FLARE_JSON_FILE", json_file_name)
+        d3_file.write(html_as_string)
+
+    print("HTML file produced in '{}'".format(os.path.abspath(html_file)))
