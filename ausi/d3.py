@@ -89,7 +89,7 @@ def create_json_for_zoomable_circle_packing(
     print("JSON file produced in '{}'".format(os.path.abspath(json_file_name)))
 
     resource_package = __name__
-    resource_path = '/'.join(('d3_templates', 'zoomable_circle_package.html'))  # Do not use os.path.join()
+    resource_path = '/'.join(('d3_templates', 'zoomable_circle_package', 'template.html'))
     template = pkg_resources.resource_string(resource_package, resource_path)
     html_file = output_file_name_prefix + ".html"
     with open(html_file, mode='w', encoding='utf-8') as d3_file:
