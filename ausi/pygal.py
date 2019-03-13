@@ -14,6 +14,16 @@ def create_xy_chart(df, group_key, x="x", y="y"):
     return xy_chart
 
 
+def create_stacked_line(df):
+    line_chart = pygal.StackedLine(fill=True, margin=100)
+    line_chart.x_labels = df.index.astype(str)
+
+    data = df.T.apply(list, axis=1)
+    for entry in data.iteritems():
+        line_chart.add(entry[0], entry[1])
+    return line_chart
+
+
 def create_indent_treemap(df):
     plot_data = pd.DataFrame(index=df.index)
     plot_data['value'] = df['lines']
