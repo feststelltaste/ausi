@@ -83,10 +83,10 @@ d3.json("JSON_FILE_MARKER", function (error, graph) {
     e.target.degree++;
   });
 
-  x.domain([0, d3.max(graph.nodes, function (d) { return d.chapters.length; })]);
+  x.domain([0, d3.max(graph.nodes, function (d) { return d.imports.length; })]);
   y.domain([0, d3.max(graph.nodes, function (d) { return d.degree; })]);
 
-  linkWidth.domain(d3.extent(graph.links, function (d) { return d.chapters.length; }));
+  linkWidth.domain(d3.extent(graph.links, function (d) { return d.imports.length; }));
 
   svg.append('g')
     .attr('class', 'x axis')
@@ -119,11 +119,11 @@ d3.json("JSON_FILE_MARKER", function (error, graph) {
     .selectAll('line')
     .data(graph.links)
     .enter().append('line')
-    .attr('x1', function (d) { return x(d.source.chapters.length); })
-    .attr('x2', function (d) { return x(d.target.chapters.length); })
+    .attr('x1', function (d) { return x(d.source.imports.length); })
+    .attr('x2', function (d) { return x(d.target.imports.length); })
     .attr('y1', function (d) { return y(d.source.degree); })
     .attr('y2', function (d) { return y(d.target.degree); })
-    .attr('stroke-width', function (d) { return linkWidth(d.chapters.length); })
+    .attr('stroke-width', function (d) { return linkWidth(d.imports.length); })
     .on('mouseover', function (d) {
       link.style('stroke', null),
 	  d3.select(this).style('stroke', '#d62333');
@@ -143,7 +143,7 @@ d3.json("JSON_FILE_MARKER", function (error, graph) {
     .data(graph.nodes)
     .enter().append('circle')
     .attr('cx', function (d) {
-      return (d.degree == 0 ? (Math.random() - 0.5) * nodeRadius : 0) + x(d.chapters.length);
+      return (d.degree == 0 ? (Math.random() - 0.5) * nodeRadius : 0) + x(d.imports.length);
     })
     .attr('cy', function (d) {
       return (d.degree == 0 ? (Math.random() - 0.5) * nodeRadius : 0) + y(d.degree);

@@ -106,7 +106,7 @@ def create_json_nodes_imports(df, from_col = 'from', to_col='to'):
     additional_deps[to_col] = pd.np.nan
     all_deps = pd.concat([deps[[from_col, to_col]], additional_deps], ignore_index=True)
     imports = all_deps.groupby(from_col)[[to_col]].agg(list)
-    imports.rename(columns={ "to" : "chapters"}, inplace=True)
+    imports.rename(columns={ "to" : "imports"}, inplace=True)
     imports.index.name = "id"
     imports.index = imports.index.map(escape_name)
     imports['name'] = imports.index
@@ -119,11 +119,18 @@ def create_semantic_substrate(df, output_file_name_prefix, from_col="from", to_c
     nodes_import_json = create_json_nodes_imports(df, from_col, to_col)
     links_json = create_json_for_links(df, from_col, to_col)
     for entry in links_json:
-        entry['chapters'] = "list"
+        entry['imports'] = "list"
 
     json_data = {'nodes': nodes_import_json, 'links': links_json}
     create_json_file(json_data, output_file_name_prefix)
     create_visualization_html_from_template('semantic_substrate', output_file_name_prefix)
+
+
+def create_hierarchical_edge_bundling(df, output_file_name_prefix, from_col="from", to_col="to"):
+
+    nodes_import_json = create_json_nodes_imports(df, from_col, to_col)
+    create_json_file(nodes_import_json, output_file_name_prefix)
+    create_visualization_html_from_template('bundle', output_file_name_prefix)
 
 
 def create_json_for_zoomable_circle_packing(
