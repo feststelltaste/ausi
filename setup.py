@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="ausi",
-    version="0.0.2",
+    version="0.0.3",
     author="Markus Harrer",
     author_email="ausi@markusharrer.de",
     description="An Unified Software Integrator : A helper library that let's you output pandas DataFrames in all kinds of formats.",
