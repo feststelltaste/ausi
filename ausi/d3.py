@@ -62,18 +62,23 @@ def create_json_for_links(df, from_col, to_col, value_col=None):
     return links_json
 
 
-def create_json_for_nodes(df, from_col, group_col, to_col):
+def create_json_for_nodes(df, from_col, to_col, group_col_from, group_col_to):
     from_nodes = df[[from_col]].copy()
     to_nodes = df[[to_col]].copy()
     to_nodes.rename(columns={to_col: from_col}, inplace=True)
-    if group_col:
+    if group_col_from and group_col_to:
         # set optional group for colorizing a group of nodes that belong together somehow
-        from_nodes['group'] = pd.factorize(df[group_col])[0]
-        to_nodes['group'] = pd.factorize(df[group_col])[0]
+        from_nodes['group'] = df[group_col_from]
+        to_nodes['group'] = df[group_col_to]
+
     all_nodes = pd.concat([from_nodes, to_nodes], sort=False).drop_duplicates()
+    if "group" in all_nodes.columns:
+        all_nodes['group'] = pd.factorize(all_nodes['group'])[0]
+        all_nodes['group'] = all_nodes['group'] / all_nodes['group'].max()
+
     nodes = pd.DataFrame(index=all_nodes.index)
     nodes['id'] = all_nodes[from_col].apply(escape_name)
-    if group_col:
+    if group_col_from and group_col_to:
         nodes['group'] = all_nodes['group']
     nodes = nodes.drop_duplicates(subset=["id"])
     # we need to escape the $ sign because d3 can't handle this. $ signs are used by Java inner classes
@@ -82,9 +87,9 @@ def create_json_for_nodes(df, from_col, group_col, to_col):
     return nodes_json
 
 
-def create_d3force(df, output_file_name_prefix, from_col="from", to_col="to", group_col=None, value_col=None):
+def create_d3force(df, output_file_name_prefix, from_col="from", to_col="to", group_col_from=None, group_col_to=None, value_col=None):
 
-    nodes_json = create_json_for_nodes(df, from_col, group_col, to_col)
+    nodes_json = create_json_for_nodes(df, from_col, to_col, group_col_from, group_col_to)
     links_json = create_json_for_links(df, from_col, to_col, value_col)
     json_data = {'nodes': nodes_json, 'links': links_json}
     create_json_file(json_data, output_file_name_prefix)
@@ -119,7 +124,6 @@ def create_semantic_substrate(df, output_file_name_prefix, from_col="from", to_c
     json_data = {'nodes': nodes_import_json, 'links': links_json}
     create_json_file(json_data, output_file_name_prefix)
     create_visualization_html_from_template('semantic_substrate', output_file_name_prefix)
-    return json_data
 
 
 def create_json_for_zoomable_circle_packing(
