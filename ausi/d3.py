@@ -23,7 +23,9 @@ def create_visualization_html_from_template(visualization_type, output_file_name
     html_file = output_file_name_prefix + ".html"
     with open(html_file, mode='w', encoding='utf-8') as d3_file:
         html_as_string = template.decode("utf-8")
-        html_as_string = html_as_string.replace("JSON_FILE_MARKER", create_json_file_name(output_file_name_prefix))
+        json_file_path = create_json_file_name(output_file_name_prefix)
+        file_name = json_file_path.split("/")[-1].split("\\")[-1]
+        html_as_string = html_as_string.replace("JSON_FILE_MARKER", file_name)
         d3_file.write(html_as_string)
     print("HTML file produced in '{}'".format(os.path.abspath(html_file)))
 
@@ -106,7 +108,7 @@ def create_json_nodes_imports(df, from_col = 'from', to_col='to'):
     additional_deps[to_col] = pd.np.nan
     all_deps = pd.concat([deps[[from_col, to_col]], additional_deps], ignore_index=True)
     imports = all_deps.groupby(from_col)[[to_col]].agg(list)
-    imports.rename(columns={ "to" : "imports"}, inplace=True)
+    imports.rename(columns={"to": "imports"}, inplace=True)
     imports.index.name = "id"
     imports.index = imports.index.map(escape_name)
     imports['name'] = imports.index
